@@ -4,7 +4,7 @@ import csv
 import datetime
 from os import path, listdir
 import html.parser as HTMLParser
-from time_helper import convert_utc_to_local_time, convert_unix_time_to_local_time, date_regex
+from timeHelper import convert_utc_to_local_time, convert_unix_time_to_local_time, date_regex
 
 
 # Helper
