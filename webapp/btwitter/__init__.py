@@ -62,33 +62,17 @@ def create_app():
     def generate_chart():
         input_values = RequestValues(request.values, app.config)
 
-        if not input_is_valid(input_values):
-            return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
-                           info={}, exclude=[])
-
-        # Single Analysis
+        #Single Analysis
         if len(input_values['keywords']) == 1:
-            database_result = create_single_analysis(input_values, app.config)
-
-            if len(database_result) <= 0:
-                return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
-                               info={}, exclude=[])
-
-            labels = list(database_result.keys())
-            data = [t[1]['measure'] for t in database_result.values()]
-
-            database_result = [database_result]
+            labels, data, database_result = create_single_analysis(input_values, app.config)
 
             series = [{"name": input_values['keywords'][0], "data": [{'y': t, 'org_y': t} for t in data]}]
             y_axis = {"min": min(data), "max": max(data), "type": 'logarithmic'}
+
         # Constrastive Analysis
         elif len(input_values['keywords']) == 2:
             labels, data, database_result = create_contrastive_analysis(input_values, app.config)
 
-            #Codeduplication how?
-            if len(database_result) <= 0:
-                return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
-                               info={}, exclude=[])
 
             series = [{"name": input_values['keywords'][0], "data": data[0]},
                       {"name": input_values['keywords'][1], "data": data[1]}]
@@ -98,7 +82,12 @@ def create_app():
         else:
             print('error unknown len of keywords')
 
-        title = {"text": 'Chart for the keywords:  ' + str(input_values['keywords'])}
+        title = {"text": 'Kontrastive Analyse für:  ' + str(input_values['keywords'])}
+
+        #MAYBE this is not right because results will crash in analysis, so fix there due to is is_valid_analysis flag?
+        if len(database_result) <= 0 or not input_is_valid(input_values):
+            return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
+                           info={}, exclude=[])
 
         return jsonify(series=series, title=title, yAxis=y_axis, labels=labels,
                        info={key: value for (key, value) in zip(input_values['keywords'], database_result)},

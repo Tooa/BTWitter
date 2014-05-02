@@ -34,7 +34,7 @@ def multiple_replace(text, dic):
 
 
 def clean_keyword(keyword):
-    return multiple_replace(keyword.lower(), vowel_dic)
+    return multiple_replace(keyword.lower(), vowel_dic).lstrip()
 
 
 def input_is_valid(request_values):
