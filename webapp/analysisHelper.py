@@ -30,10 +30,13 @@ def append_overlap(single_results, overlap):
 def rescale(data, min_value, max_value, min_value_new, max_value_new, offset):
     tmp1 = [
         {'y': max(scale(d['y'], max_value, min_value, max_value_new, min_value_new), offset), 'org_y': d['org_y']}
-        if d['org_y'] != 0 else {'y': 0, 'org_y': 0} for d in data[0]]
-    tmp2 = [{'y': max(scale(d['y'], max_value, min_value, max_value_new, min_value_new), offset) * -1,
-             'org_y': d['org_y']}
-            if d['org_y'] != 0 else {'y': 0, 'org_y': 0} for d in data[1]]
+        if d['org_y'] != 0 else {'y': 0, 'org_y': 0} for d in data[0]
+    ]
+
+    tmp2 = [
+        {'y': max(scale(d['y'], max_value, min_value, max_value_new, min_value_new), offset) * -1, 'org_y': d['org_y']}
+        if d['org_y'] != 0 else {'y': 0, 'org_y': 0} for d in data[1]
+    ]
 
     return [tmp1, tmp2]
 
