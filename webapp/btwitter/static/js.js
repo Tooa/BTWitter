@@ -112,7 +112,7 @@ function sendContext(cooccurrence, keyword) {
     $("#context_modal").modal('show');
 
     $.ajax({
-        url:  '/getContext',
+        url:  '/get_context',
         type: 'POST',
         data: {
             keyword:  JSON.stringify(keyword),

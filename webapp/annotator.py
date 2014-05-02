@@ -19,7 +19,6 @@ class AnnotationMeta(type):
 
     def __call__(cls, *args, **kw):
         i = super(AnnotationMeta, cls).__call__(*args, **kw)
-
         AnnotationMeta.instances.append(i)
 
         return i
@@ -63,7 +62,6 @@ class WordClassAnnotator(Annotation):
         for key in dic.keys():
             dic[key] = most_common(dic[key])
         return dic
-
 
     def _read_word_class_file(self, file):
         word_classes = defaultdict(Counter)

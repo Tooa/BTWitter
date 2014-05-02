@@ -1,6 +1,6 @@
-class Config(object):
+class ProductiveConfig(object):
 
-    UPLOAD_FOLDER = 'cabaret/upload'
+    UPLOAD_FOLDER = 'btwitter/upload'
     ALLOWED_EXTENSIONS = set(['co_s', 'words', 'postags', 'ner'])
 
     GRAPH_DB_URI = 'http://localhost:7474/db/data/'

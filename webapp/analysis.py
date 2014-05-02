@@ -1,18 +1,28 @@
-import re
-from math import log, exp
-from json import loads
-from itertools import chain
+from math import log
 from py2neo import neo4j
+from itertools import chain
 from flask import g
 from collections import OrderedDict
 
-vowel_dic = {'ä': 'ae', 'Ä': 'ae', 'ü': 'ue', 'Ü': 'ue', 'Ö': 'oe', 'ö': 'oe', 'ß': 'ss', 'ẞ': 'ss'}
+#TODO: Use clean keyword
+from requestHelper import multiple_replace, vowel_dic
 
 
-def multiple_replace(text, dic):
-    # Note this implementation uses a single pass and ignores letter case!
-    regex = re.compile(r"|".join(map(re.escape, list(dic.keys()))))
-    return regex.sub(lambda mo: dic[mo.group(0)], text)
+class Relation(dict):
+    def __init__(self, rel, measure_to_use):
+        super(Relation, self).__init__(self)
+        self['edge_weight'] = rel['weight']
+        self['measure'] = rel[measure_to_use]
+
+
+class Node(dict):
+    def __init__(self, node, app_config):
+        super(Node, self).__init__(self)
+        #For each node the dict is reversed TODO
+        reverse_tags = {v: k for k, l in app_config['POS_TAGS'].items() for v in l}
+        self['freq'] = node['frequency']
+        self['word_class'] = reverse_tags[node['word_class']]
+        self['name_entity'] = 'ja' if node['name_entity'] else 'nein'
 
 
 def create_single_analysis(input_values, config):
@@ -127,12 +137,6 @@ def transform_to_logistic_curve(value, max_v, min_v):
     transformed_value = (value - min_v) / max_v
     return {'y': logic(transformed_value), 'org_y': value}
 
-    #max(value, int(max_v * 0.05))
-    #log(value, 10)
-
-    #return {'y': logic(new_v) * modifier, 'org_y': value}
-    #return log(value) * modifier
-
 
 def create_single_query(keyword, input_values, limit, exclude=[]):
     ner = [1] if input_values['opts']['only_names'] else [0, 1]
@@ -159,54 +163,9 @@ def create_overlap_query(k1, k2, input_values, limit):
 
 
 def execute_query(query):
-    res = neo4j.CypherQuery(g.db, query)
+    res = neo4j.CypherQuery(g.neo4j_db, query)
     for record in res.stream():
         yield record
 
 
-def input_is_valid(request_values):
-    def first_keyword_is_not_empty():
-        return request_values['keywords'] and request_values['keywords'][0] != ''
 
-    def any_word_class_selected():
-        return any(request_values['pos'].values())
-
-    return first_keyword_is_not_empty() and request_values['limit'] > 0 and any_word_class_selected()
-
-
-class RequestValues(dict):
-    def __init__(self, request, app_config):
-        super(RequestValues, self).__init__(self)
-        self['exclude_list'] = loads(request['exclude'])
-        self['keywords'] = [x.strip() for x in loads(request['keywords'])]
-        self['measure'] = request['measure']
-        self['limit'] = int(request['limit'])
-        self['overlap_limit'] = int(request['overlap_limit'])
-        self['edge_weight'] = int(request['edge_weight'])
-        self['freq_a'] = int(request['freq_a'])
-        self['freq_b'] = int(request['freq_b'])
-        self['freq_ab'] = int(request['freq_ab'])
-        #Only necessary for rel, maybe remove
-        self['opts'] = loads(request['opts'])
-        self['rel'] = 'AFTER' if self['opts']['include'] else 'BEFORE'
-        #Only necessary for allowed_word_classes
-        self['pos'] = loads(request['pos'])
-        self['allowed_word_classes'] = list(chain.from_iterable(app_config['POS_TAGS'][k] for k in
-                                                                self['pos'] if self['pos'][k]))
-
-
-class Relation(dict):
-    def __init__(self, rel, measure_to_use):
-        super(Relation, self).__init__(self)
-        self['edge_weight'] = rel['weight']
-        self['measure'] = rel[measure_to_use]
-
-
-class Node(dict):
-    def __init__(self, node, app_config):
-        super(Node, self).__init__(self)
-        #For each node the dict is reversed TODO
-        reverse_tags = {v: k for k, l in app_config['POS_TAGS'].items() for v in l}
-        self['freq'] = node['frequency']
-        self['word_class'] = reverse_tags[node['word_class']]
-        self['name_entity'] = 'ja' if node['name_entity'] else 'nein'

@@ -5,36 +5,29 @@ from itertools import chain
 from flask import Flask, render_template, request, jsonify, g
 from py2neo import neo4j
 import psycopg2
-import subprocess
 
-from helper import multiple_replace, vowel_dic, RequestValues, create_contrastive_analysis, create_single_analysis, \
-    input_is_valid
+from databaseImport import do_import
+from requestHelper import clean_keyword, RequestValues, input_is_valid
+
+from analysis import create_contrastive_analysis, create_single_analysis
 
 
 def create_app():
     app = Flask(__name__)
 
     app.secret_key = os.urandom(24)
-    app.config.from_object('config.Config')
+    app.config.from_object('config.ProductiveConfig')
 
     @app.before_request
     def before_request():
-        g.db = neo4j.GraphDatabaseService(app.config['GRAPH_DB_URI'])
-        g.pgDB = psycopg2.connect(app.config['POSTGRE_SQL_URI'])
+        g.neo4j_db = neo4j.GraphDatabaseService(app.config['GRAPH_DB_URI'])
+        g.posgre_db = psycopg2.connect(app.config['POSTGRE_SQL_URI'])
 
     @app.route("/", methods=['GET', 'POST'])
     @app.route('/index')
     def index():
-        return render_template(
-            'index.jinja2', measures=app.config['SIGNIFICANCE_MEASURES'],
-            pos_tags=app.config['POS_TAGS'].keys())
-
-    def save_file(file, save_name):
-        def allowed_file(filename):
-            return '.' in filename and filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
-
-        if file and allowed_file(file.filename):
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], save_name))
+        return render_template('index.jinja2', measures=app.config['SIGNIFICANCE_MEASURES'],
+                               pos_tags=app.config['POS_TAGS'].keys())
 
     @app.route('/import', methods=['GET', 'POST'])
     def import_data():
@@ -42,67 +35,26 @@ def create_app():
             return "Access denied"
 
         if request.method == 'POST':
-
-            upload_folder = app.config['UPLOAD_FOLDER']
-
-            save_file(request.files['file1'], 'before_words')
-            save_file(request.files['file2'], 'after_words')
-            save_file(request.files['file3'], 'before_rel')
-            save_file(request.files['file4'], 'after_rel')
-            save_file(request.files['file5'], 'postags')
-            save_file(request.files['file6'], 'multiwords')
-
-            subprocess.call(
-                ['python3.3', 'convert.py',
-                 os.path.join(upload_folder, 'before_words'),
-                 os.path.join(upload_folder, 'before_rel'),
-                 os.path.join(upload_folder, 'corpus_before'),
-                 os.path.join(upload_folder, 'corpus_before'), 'BEFORE'])
-
-            subprocess.call(
-                ['python3.3', 'convert.py',
-                 os.path.join(upload_folder, 'after_words'),
-                 os.path.join(upload_folder, 'after_rel'),
-                 os.path.join(upload_folder, 'corpus_after'),
-                 os.path.join(upload_folder, 'corpus_after'), 'AFTER'])
-
-            os.remove(os.path.join(upload_folder, 'before_words'))
-            os.remove(os.path.join(upload_folder, 'after_words'))
-            os.remove(os.path.join(upload_folder, 'before_rel'))
-            os.remove(os.path.join(upload_folder, 'after_rel'))
-            os.remove(os.path.join(upload_folder, 'postags'))
-            os.remove(os.path.join(upload_folder, 'multiwords'))
-
-            subprocess.call(
-                ['import2Neo4j.sh',
-                 os.path.join(upload_folder, 'corpus_after.nodes.gz'),
-                 os.path.join(upload_folder, 'corpus_after.relation.gz'),
-                 os.path.join(upload_folder, 'corpus_before.relation.gz')])
-
+            do_import(request, app.config['UPLOAD_FOLDER'], app.config['ALLOWED_EXTENSIONS'])
             return "Import Done"
 
         return render_template('import.jinja2')
 
+    @app.route("/get_context", methods=('POST',))
+    def get_context():
+        keyword = clean_keyword(loads(request.values['keyword']))
+        co_occurring_word = request.values['cooccurrence']
 
-    #TODO Rename: get_context()
-    @app.route("/getContext", methods=('POST',))
-    def getContext():
-        def query(keyword, term, cursor):
-            cursor.execute("""select S.sentence from sentences S where S.id in
+        cursor = g.posgre_db.cursor()
+        cursor.execute("""select S.sentence from sentences S where S.id in
                         (select sentenceId from inv_w I where
                         I.wordId in (select id from words where word IN (%s, %s))
                         group by I.sentenceId
                         having count(distinct I.wordId) = 2
-                        );""", (keyword, term))
-            return cursor.fetchall()
+                        );""", (keyword, co_occurring_word))
 
-        values = request.values
-        keyword = loads(values['keyword'])
-        cooccurrence = values['cooccurrence']
-
-        cur = g.pgDB.cursor()
-        result = query(multiple_replace(keyword.lower(), vowel_dic), cooccurrence, cur)
-        cur.close()
+        result = cursor.fetchall()
+        cursor.close()
         return jsonify(tweets=result)
 
 
