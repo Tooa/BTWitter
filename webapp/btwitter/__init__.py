@@ -81,10 +81,9 @@ def create_app():
 
             series = [{"name": input_values['keywords'][0], "data": [{'y': t, 'org_y': t} for t in data]}]
             y_axis = {"min": min(data), "max": max(data), "type": 'logarithmic'}
-            context_list = [(l, input_values['keywords'][0:]) for l in labels]
         # Constrastive Analysis
         elif len(input_values['keywords']) == 2:
-            labels, data, context_list, database_result = create_contrastive_analysis(input_values, app.config)
+            labels, data, database_result = create_contrastive_analysis(input_values, app.config)
 
             #Codeduplication how?
             if len(database_result) <= 0:
@@ -101,7 +100,7 @@ def create_app():
 
         title = {"text": 'Chart for the keywords:  ' + str(input_values['keywords'])}
 
-        return jsonify(series=series, title=title, yAxis=y_axis, labels=labels, context_list=context_list,
+        return jsonify(series=series, title=title, yAxis=y_axis, labels=labels,
                        info={key: value for (key, value) in zip(input_values['keywords'], database_result)},
                        exclude=True if input_values['exclude_list'] else False)
 

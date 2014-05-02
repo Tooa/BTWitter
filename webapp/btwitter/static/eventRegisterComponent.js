@@ -71,14 +71,13 @@ function registerRemoveWordFromDiagramEvent() {
     $('#edit_save_button').click(function(){
         var allVals = [];
         $('#edit_modal input:checkbox').each(function() {
-            if(!$(this).is(':checked')) {
+            if($(this).is(':checked')) {
                 allVals.push($(this).attr('id'));
             }
         });
         resend(allVals);
     })
 }
-
 
 function registerTypeaHeadWords(id) {
     // instantiate the bloodhound suggestion engine

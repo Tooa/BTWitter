@@ -1,6 +1,5 @@
 function resend(exclude) {
-    var pos = {},
-        opts = {};
+    var pos = {}, opts = {};
 
     //Part of speech checkboxes
     $('.c-pos').each(function() {
@@ -32,7 +31,6 @@ function resend(exclude) {
     if(typeof exclude == 'undefined')
         exclude = []
 
-    var t = new Date().getTime();
     $.ajax({
         url: '/generate_chart',
         type: 'POST',
@@ -56,46 +54,18 @@ function resend(exclude) {
         traditional: true
     }).done(function (data) {
         $(document).ready(function() {
-                var chart = new Highcharts.Chart({
-                    //For thesis exports use 500 height sonst 800
-                    chart: {type: 'column', height: 500 ,zoomType: 'x', renderTo: 'graph'},
-                    title: data.title,
-                    xAxis: {"categories": data.labels, "labels": {"rotation": -45, "align": 'right',
-                                                 "style": {"fontSize": '13px', "fontFamily": 'Verdana, sans-serif'}}},
-                    yAxis: data.yAxis,
-                    series: data.series,
-                    plotOptions:  {series: {stacking: "normal", cursor: 'pointer', point: {
-                                    events: {
-                                        click: function() {
-                                            sendContext(this.category, this.series.name);
-                                        }
-                                    }}
-                    }},
-                    credits: {enabled: false},
-                    tooltip: {
-                        //Maybe move to extra function
-                        formatter: function() {
-                            return '<span style="font-size:16px">' + this.x + '</span>' +
-                                    '<br>Likelihood Wert: <b>'+ Highcharts.numberFormat(Math.abs(this.point.org_y), 0) +
-                                    '</b><br>Kantengewicht: <b>' + data.info[this.series.name][this.x][1]['edge_weight'] +
-                                    '</b><br>Wortfrequenz: <b>' + data.info[this.series.name][this.x][0]['freq']  +
-                                    '</b><br>Wortklasse: <b>' + data.info[this.series.name][this.x][0]['word_class'] +
-                                    '</b><br>Namensentität: <b>' + data.info[this.series.name][this.x][0]['name_entity'] + '</b>';
-                        }
-                    }
-                });
-            });
+            renderChart(data);
+        });
 
         //Delete only if nothing is excluded
         if(!data.exclude)
             $('.table-row').remove();
 
         var counter = 1;
-        data.context_list.forEach(function(tuple) {
-            $('#edit_table').append('<tr class="table-row"> <td>' + counter + '</td> <td>' + tuple[0] + '</td><td> <input type="checkbox" id="'+ tuple[0] + '" checked="true"> </td> </tr>');
+        data.labels.forEach(function(name) {
+            $('#edit_table').append('<tr class="table-row"> <td>' + counter + '</td> <td>' + name + '</td><td> <input type="checkbox" id="'+ name + '"> </td> </tr>');
             counter++;
         })
-
 
         $('.nav a').css({color: ''});
     }).fail(function () {
@@ -104,8 +74,38 @@ function resend(exclude) {
 }
 
 
-function sendContext(cooccurrence, keyword) {
+function renderChart(data) {
+    var chart = new Highcharts.Chart({
+                //For thesis exports use 500 height sonst 800
+                chart: { type: 'column', height: 500, zoomType: 'x', renderTo: 'graph' },
+                title: data.title,
+                xAxis: { "categories": data.labels, "labels": { "rotation": -45, "align": 'right', "style": {"fontSize": '13px', "fontFamily": 'Verdana, sans-serif'}}},
+                yAxis: data.yAxis,
+                series: data.series,
+                plotOptions:  {
+                    series: {
+                        stacking: "normal", cursor: 'pointer', point: {
+                            events: { click: function() { renderContext(this.category, this.series.name) }}
+                        }
+                    }
+                },
+                credits: { enabled: false },
+                tooltip: {
+                    //Maybe move to extra function
+                    formatter: function() {
+                        return '<span style="font-size:16px">' + this.x + '</span>' +
+                                '<br>Likelihood Wert: <b>'+ Highcharts.numberFormat(Math.abs(this.point.org_y), 0) +
+                                '</b><br>Kantengewicht: <b>' + data.info[this.series.name][this.x][1]['edge_weight'] +
+                                '</b><br>Wortfrequenz: <b>' + data.info[this.series.name][this.x][0]['freq']  +
+                                '</b><br>Wortklasse: <b>' + data.info[this.series.name][this.x][0]['word_class'] +
+                                '</b><br>Namensentität: <b>' + data.info[this.series.name][this.x][0]['name_entity'] + '</b>';
+                    }
+                }
+    });
+}
 
+
+function renderContext(cooccurrence, keyword) {
     var code = '<div class="progress progress-striped active"><div class="progress-bar"  role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%"><span class="sr-only">80% Complete</span></div></div><div align="center"> (Loading... May take some time) </div>'
     $("#context_modal_header").text('Loading...')
     $("#panel_body_context").html(code)
@@ -139,25 +139,20 @@ function sendContext(cooccurrence, keyword) {
            set_content(index)
        });
 
-
     }).fail(function () {
-        //TODO: Add Warning Bootstrap
-        //$('.nav a').css({color: 'red'});
+        $('.nav a').css({color: 'red'});
     });
 }
 
 
 $(function () {
-
     $('#learn_more_button').click(function() {
         $('a[href=#main]').tab('show');
     })
 
-    registerTypeaHeadWords('keyword_form_first')
-
-    registerRemoveWordFromDiagramEvent
+    registerTypeaHeadWords('keyword_form_first');
+    registerRemoveWordFromDiagramEvent();
     registerParameterEvents();
     registerGeneralButtonToggleEvents();
     registerAdvancedModeToggleButtonEvents();
-
 });

@@ -5,6 +5,7 @@ from itertools import chain
 
 vowel_dic = {'ä': 'ae', 'Ä': 'ae', 'ü': 'ue', 'Ü': 'ue', 'Ö': 'oe', 'ö': 'oe', 'ß': 'ss', 'ẞ': 'ss'}
 
+
 class RequestValues(dict):
     def __init__(self, request, app_config):
         super(RequestValues, self).__init__(self)

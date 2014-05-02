@@ -83,10 +83,6 @@ def create_contrastive_analysis(input_values, config):
 
     labels = list(results[0].keys()) + list(overlap.keys()) + list(results[1].keys())[::-1]
 
-    context_list = [(x, keywords[0:1]) for x in list(results[0].keys())] + \
-                   [(x, keywords) for x in list(overlap.keys())] + \
-                   [(x, keywords[1:2]) for x in list(results[1].keys())[::-1]]
-
     tmp = OrderedDict()
     for k, v in overlap.items():
         results[0][k] = (v[0], v[1])
@@ -119,7 +115,7 @@ def create_contrastive_analysis(input_values, config):
 
     data = [tmp1, tmp2]
 
-    return labels, data, context_list, results
+    return labels, data, results
 
 
 def scale(x, origin_max, origin_min, transform_max, transform_min):
