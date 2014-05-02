@@ -1,0 +1,287 @@
+{% extends '_layout.jinja2' %}
+{% block parameter %}
+    <div class="row">
+        <div class="col-md-3">
+            <!--  Keyword control -->
+            <div class="form-group" data-toggle="tooltip" title="Enter Keywords separated by comma">
+                <label class="control-label" for="keywords">Schlüsselwörter:</label>
+                <div class="input-group controls">
+                    <input type="text" class="form-control" data-provide="typeahead" id="keyword_form_first" placeholder="Schlüsselwort">
+                        <span class="input-group-btn">
+                            <button class="btn btn-success" type="button" id="keyword_form_button">Go!</button>
+                        </span>
+                </div>
+                <button type="button" class="btn btn-info btn-sm add" style="margin-top: 2px;">+</button>
+                <button type="button" class="btn btn-info btn-sm rem" style="margin-top: 2px;">-</button>
+            </div>
+        </div>
+
+        <!-- Display limit control -->
+        <div class="col-md-2">
+            <div class="form-group" data-toggle="tooltip" title="Anzahl der Begriffe die angezeigt werden sollen">
+                <label class="control-label" for="display_limit">Anzahl der Begriffe:</label>
+                <input class="form-control" id="display_limit_form" type="number" value = "40" placeholder="40">
+            </div>
+        </div>
+
+
+        <div class="col-md-4">
+            <label class="control-label" for="options">Part of Speech:</label>
+            <div class="well well-sm col-md-12">
+                <div data-toggle="tooltip" title="Part-of-Speech Einstellung">
+                    {% for tag in pos_tags | sort(-1) %}
+                      <div class="col-md-3">
+                      <label class="checkbox-inline"  for="{{ tag }}">
+                        <input type="checkbox" id="c-{{ tag }}" class="c-pos" checked /> {{ tag }}
+                      </label>
+                       </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="control-label" for="options">Sonstige Optionen:</label>
+            <div class="well well-sm col-md-12">
+                <div class="col-md-12">
+                <label class="checkbox-inline" for="include" data-toggle="tooltip" title="Betrachte Twitter-Nachrichten nach dem Wahltag am 22.09.2013">
+                    <input type="checkbox" id="c-include" class="c-opts" checked> betrachte twitter-nachrichten nach der btw
+                </label>
+                </div>
+                <div class="col-md-12">
+                <label class="checkbox-inline" for="only_names" data-toggle="tooltip" title="Zeige nur Namensentitäten wie Personen und Organisationen an">
+                    <input type="checkbox" id="c-only_names" class="c-opts"/> nur namentsentitäten
+                </label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock parameter %}
+
+{% block parameter_advanced %}
+    <!-- Co-occurrence measure control -->
+    <div class="col-md-2">
+        <div class="form-group" data-toggle="tooltip" title="Statistisches Wortassoziationsmetrik">
+            <label class="control-label" for="measures">Wortassoziationsmetrik:</label>
+            <select class="form-control" id="measures_form">
+                {% for id, description in measures %}
+                    <option value="{{ id }}"> {{ description }} </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- Minimal edge weight control -->
+    <div class="col-md-2">
+        <div class="form-group" data-toggle="tooltip" title="Threshold for retrieving words">
+            <label class="control-label" for="edge_weight">Kantengewicht:</label>
+            <input class="form-control" id="edge_weight_form" type="number" value = "3" placeholder="3">
+        </div>
+    </div>
+
+    <!-- Overlap display limit control -->
+    <div class="col-md-2">
+        <div class="form-group" data-toggle="tooltip" title="Anteil der Begriffe im Schnitt in Prozent">
+            <label class="control-label" for="overlap_limit">Anteil der Begriffe im Schnitt in Prozent:</label>
+            <input class="form-control" id="overlap_limit_form" type="number" value = "25" placeholder="25" min="0" max="100">
+        </div>
+    </div>
+
+    <!-- Freq. Word A control -->
+    <div class="col-md-2">
+        <div class="form-group" data-toggle="tooltip" title="Schwellwert für die Frequenz des ersten Schlüsselwortes">
+            <label class="control-label" for="frequency_word_a">Wortfrequenz A:</label>
+            <input class="form-control" id="frequency_word_a_form" type="number" value = "3" placeholder="3">
+        </div>
+    </div>
+
+    <!-- Freq. Word B control -->
+    <div class="col-md-2">
+        <div class="form-group" data-toggle="tooltip" title="Schwellwert für die Frequenz des zweiten Schlüsselwortes">
+            <label class="control-label" for="frequency_word_b">Wortfrequenz B:</label>
+            <input class="form-control" id="frequency_word_b_form" type="number" value = "3" placeholder="3">
+        </div>
+    </div>
+
+    <!-- Freq. Word B control -->
+    <div class="col-md-2">
+        <div class="form-group" data-toggle="tooltip" title="Schwellwert für die Frequenz der Wörter im Schnitt">
+            <label class="control-label" for="frequency_word_ab">Wortfrequenz AB:</label>
+            <input class="form-control" id="frequency_word_ab_form" type="number" value = "3" placeholder="3">
+        </div>
+    </div>
+{% endblock parameter_advanced %}
+
+{% block graph %}
+    <div id="graph" style="text-align: center"></div>
+{% endblock graph %}
+
+{% block modals %}
+    <div id="edit_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edit_modal_header" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title" >Diagramm bearbeiten</h3>
+                </div>
+                <div class="modal-body">
+                    <table id="edit_table" class="table table-hover table-striped">
+                    <tr>
+                        <th>#
+                        <th>Begriff
+                        <th>Entfernen
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" id="edit_save_button" class="btn btn-primary" data-dismiss="modal">Speichern</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="help_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="help_modal_header" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title" >Configuration Parameter Help</h3>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#normal"  data-toggle="tab">Normal Mode</a></li>
+                        <li><a href="#advanced"  data-toggle="tab">Advanced Mode</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="normal">
+                            <dl style="margin-top: 10px;">
+                                 <dt>Keywords: </dt>
+                                 <dd>
+                                     Die beiden Eingabefelder erwarteten jeweils einen Politiker oder eine Partei, für welche eine kontrastive Kollokationsanalyse durchgeführt werden soll.
+                                     Mit Hilfe des Buttons, auf dem ein Minuszeichen abgebildet ist, kann ein Eingabefeld entfernt werden, um eine Analyse mit nur einer Entität durchzuführen.
+                                     Analog erzeugt der Button mit dem Pluszeichen ein neues Eingabefeld für die kontrastive Analyse.
+                                 </dd>
+                                 <dt>Display Limit: </dt>
+                                 <dd>
+                                    Dieses Feld reguliert die Gesamtanzahl der angezeigten Wörter in der Analyse. Die Obergrenze liegt bei 200 Begriffen, da mehr Wörter nicht überschneidungsfrei
+                                    auf durchschnittlichen Monitoren dargestellt werden können.
+                                 </dd>
+                                 <dt>Part of Speech: </dt>
+                                 <dd>
+                                     Diese Option ermöglicht es, verschiedene Wortklassen von der Analyse auszuschließen. In der Standardeinstellung werden alle Wortklassen betrachtet.
+                                     Diese Wortklassen repräsentieren neben herkömmlichen Wortarten (Verben, Nomen, Adjektive, ...) auch beispielsweise Orte, die in Zusammenhang mit
+                                     der untersuchten Entität stehen. Außerdem werden Twitter-spezifische Klassen wie Hashtags und Usernamen unterstützt.
+                                 </dd>
+                                 <dt>Other Options: </dt>
+                                 <dd>
+                                     Zum einen können Tweets nach der Bundestagswahl am 22. September in die Auswertung der Analyse aufgenommen werden. Diese Funktion ist nützlich für
+                                     Untersuchungen, die speziell auf Auswirkungen vor und nach dem Wahlkampf fokussiert sind. Zum anderen bietet der zweite Schalter die Möglichkeit, die Analyse
+                                     auf Namensentitäten zu beschränken. Dadurch werden nur Politiker angezeigt, die dem gegebenen Politiker oder der gegebenen Partei stark assoziiert sind.
+                                 </dd>
+                            </dl>
+                        </div>
+
+                        <div class="tab-pane" id="advanced">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="context_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="context_modal_header" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3 class="modal-title" id="context_modal_header">Loading ...</h3>
+                </div>
+                <div class="modal-body" id="context_modal_body">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading"><h2 class="panel-title" id="panel_title_context">Kontext</h2></div>
+                            <div class="panel-body" id="panel_body_context" style="height: 110px"><!-- Generated by Javascript --></div>
+                            <div class="panel-footer"><a href="#" id="next_tweet_button" class="btn btn-default btn-sm">Nächste Twitter-Nachricht</a></div>
+                        </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Schließen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock modals %}
+
+
+{% block about %}
+
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Hello, world!</h1>
+        <p>This is a template for my bachelor thesis website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+        <p><a class="btn btn-primary btn-lg" role="button" id="learn_more_button">Learn more &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#usage_collapse">Usage</a>
+                    </h4>
+                </div>
+                <div id="usage_collapse" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#author_collapse">Author</a>
+                    </h4>
+                </div>
+                <div id="author_collapse" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                       Uli Fahrer is a Computer Science student at the <a title="Technische Universität Darmstadt" href="http://www.tu-darmstadt.de/" target="_blank">Technische Universität Darmstadt</a>. His main interests are Web Mining, Text Mining and Natural Language Processing.
+                       He has given several <a title="Programmiervorkurs" href="http://d120.de/vorkurs/" target="_blank">lectures</a> about software programming in Java at his university for students in the first semester. Furthermore he is working as research assistant at the <a title="Software Technology Group" href="http://www.stg.tu-darmstadt.de/" target="_blank">Software Technology Group</a> focusing on code recommendation.
+                       Beside these activities he is vice chairman of the "<b>F</b>örderverein für <b>C</b>omputerspiele<b>E</b>ntwicklung e. V" (short FCE), which organizes an event called <a href="http://devmania.net/" target="_blank">Devmania</a>.
+                       If you want to know more, drop me a line: uli.fahrer[a_t]stud.tu-darmstadt.de
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Thesis</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Student Talk Slides</h2>
+          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Paper Informatiktage 2014</h2>
+          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+      </div>
+    </div>
+
+{% endblock about %}
+

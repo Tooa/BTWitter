@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Twitter German Election 2013</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='components/bootstrap/css/bootstrap.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='own.css') }}" type="text/css" />
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="col-lg-12">
+        <div class="header">
+            <h3 class="text-muted">Webandwendung zur deutschen Bundestagswahl 2013 </h3>
+            <ul class="nav nav-tabs">
+                <li><a href="#main" data-toggle="tab">Analyse</a></li>
+                <li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Optionen <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                    <li><a href="#edit_modal" data-toggle="modal">Diagamm bearbeiten</a></li>
+                    </ul>
+                    <li class="active"><a href="#about" data-toggle="tab" class="pull-right">Über</a></li>
+                </li>
+            </ul>
+        </div>
+    <div>
+
+    <div class="tab-content">
+        <div class="tab-pane" id="main">
+            <div class="col-md-12" style="padding: 10px">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <span>Parameter (</span>
+                                <a class="glyphicon glyphicon-search" href="#help_modal" data-toggle="modal" >Hilfe)</a>
+                                <div class="col-md-* pull-right">
+                                    <label class="control-label" style="color: #ffffff">Erweiterte Modus:</label>
+                                        <div class="btn-group btn-toggle">
+                                            <button id="advanced_mode_on" class="btn btn-xs btn-default">ON</button>
+                                            <button id="advanced_mode_off" class="btn btn-xs btn-success active">OFF</button>
+                                        </div>
+                                </div>
+
+                            </h4>
+                        </div>
+                        <div id="parameter_collapse">
+                            <div class="panel-body">
+                                {% block parameter %}
+                                {% endblock parameter %}
+                                <div id="advanced_control" class="hide">
+                                    {% block parameter_advanced %}
+                                    {% endblock parameter_advanced %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+
+            <!-- Hotfix for big diagram todo change style here! -->
+            <div class="col-lg-12" style="min-width: 300px">
+                {% block graph %}
+                {% endblock graph %}
+            </div>
+
+        </div>
+
+
+        <div class="tab-pane active" id="about">
+            <div class="col-lg-12" style="padding: 10px">
+                {% block about %}
+                {% endblock about %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for edit -->
+    <!-- TODO Wie lagert man Modals aus -->
+    {% block modals %}
+    {% endblock modals %}
+
+    <!-- Javascript include at the end of the file, so it might load faster -->
+    <script type="text/javascript" src="{{ url_for('static', filename='components/jquery-2.1.0.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='components/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='components/bloodhound.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='components/bootstrap3-typeahead.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='EventRegisterComponent.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='components/highcharts.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='components/exporting.js') }}"></script>
+  </body>
+</html>
+
+
+

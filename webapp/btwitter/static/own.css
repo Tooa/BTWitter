@@ -1,0 +1,64 @@
+.nav a {
+  -webkit-transition: all 500ms ease-out;
+  -moz-transition: all 500ms ease-out;
+  transition: all 500ms ease-out;
+}
+
+.control-group {
+  float:left;
+  padding-left:20px;
+  margin-top: 0px;
+}
+
+.checkbox {
+    float: left;
+    margin-left: 8px;
+}
+
+legend + .control-group {
+    margin-top: 0px;
+}
+
+.controls > .radio:first-child, .controls > .checkbox:first-child {
+    padding-top: 0px;
+}
+
+.side {
+  width: 375px !important;
+}
+
+label {
+  font-variant: small-caps;
+  color: #777;
+}
+
+.time label {
+  display: inline;
+}
+/* change height back to 450*/
+.modal-body {
+  height: 450px;
+  overflow: auto;
+}
+
+
+/*
+Used to screen capture
+.modal-content {
+    border: solid #0000ff;
+}
+
+.modal-backdrop {background-color: green;}
+*/
+
+
+.well {
+    background-color: white;
+}
+
+
+dt, dd { display: block; float: left; margin-top: 10px; }
+dt { clear: both; }
+
+
+
