@@ -82,7 +82,7 @@ def create_app():
             labels, data, database_result = create_single_analysis(input_values, app.config)
 
             series = [{"name": input_values['keywords'][0], "data": [{'y': t, 'org_y': t} for t in data]}]
-            y_axis = {"min": minimum(data, 0), "max": maximum(data, 0), "type": 'logarithmic'}
+            y_axis = {"min": minimum(data, -1), "max": maximum(data, -1), "type": 'logarithmic'}
 
         # Constrastive Analysis
         elif len(input_values['keywords']) == 2:
@@ -97,7 +97,6 @@ def create_app():
             print('error unknown len of keywords')
 
         title = {"text": 'Kontrastive Analyse für:  ' + str(input_values['keywords'])}
-
 
         #Maybe input valid is not nec anymore
         if all(not d for d in database_result) or not input_is_valid(input_values):

@@ -27,7 +27,7 @@ def maximum(iterable, default):
 def minimum(iterable, default):
     """Like max(), but returns a default value if xs is empty."""
     try:
-        return max(iterable)
+        return min(iterable)
     except ValueError:
         return default
 
