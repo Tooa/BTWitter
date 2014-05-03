@@ -22,6 +22,7 @@ import psycopg2
 
 from databaseImport import do_import
 from requestHelper import clean_keyword, RequestValues, input_is_valid
+from analysisHelper import maximum, minimum
 
 from analysis import create_contrastive_analysis, create_single_analysis
 
@@ -57,9 +58,7 @@ def create_app():
     @app.route("/get_context", methods=('POST',))
     def get_context():
         keyword = clean_keyword(loads(request.values['keyword']))
-        print(keyword)
         co_occurring_word = request.values['cooccurrence']
-        print(co_occurring_word)
 
         cursor = g.posgre_db.cursor()
         cursor.execute("""select S.sentence from sentences S where S.id in
@@ -71,7 +70,6 @@ def create_app():
 
         result = cursor.fetchall()
         cursor.close()
-        print(result)
         return jsonify(tweets=result)
 
 
@@ -84,25 +82,25 @@ def create_app():
             labels, data, database_result = create_single_analysis(input_values, app.config)
 
             series = [{"name": input_values['keywords'][0], "data": [{'y': t, 'org_y': t} for t in data]}]
-            y_axis = {"min": min(data), "max": max(data), "type": 'logarithmic'}
+            y_axis = {"min": minimum(data, 0), "max": maximum(data, 0), "type": 'logarithmic'}
 
         # Constrastive Analysis
         elif len(input_values['keywords']) == 2:
             labels, data, database_result = create_contrastive_analysis(input_values, app.config)
 
-
             series = [{"name": input_values['keywords'][0], "data": data[0]},
                       {"name": input_values['keywords'][1], "data": data[1]}]
-            y_axis = {"min": min(chain(data[0], data[1]), key=lambda k: k['y'])['y'],
-                      "max": max(chain(data[0], data[1]), key=lambda k: k['y'])['y']}
+            y_axis = {"min": minimum(chain(data[0], data[1]), key=lambda k: k['y'])['y'],
+                      "max": maximum(chain(data[0], data[1]), key=lambda k: k['y'])['y']}
 
         else:
             print('error unknown len of keywords')
 
         title = {"text": 'Kontrastive Analyse für:  ' + str(input_values['keywords'])}
 
-        #MAYBE this is not right because results will crash in analysis, so fix there due to is is_valid_analysis flag?
-        if len(database_result) <= 0 or not input_is_valid(input_values):
+
+        #Maybe input valid is not nec anymore
+        if all(not d for d in database_result) or not input_is_valid(input_values):
             return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
                            info={}, exclude=[])
 

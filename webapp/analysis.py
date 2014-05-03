@@ -27,7 +27,7 @@ def create_single_analysis(input_values, config):
     database_result = execute_single_analysis_query(query, config, input_values['measure'])
 
     labels = list(database_result.keys())
-    data = list(map(lambda value: value[1]['measure'], database_result.values()))
+    data = [value[1]['measure'] for value in database_result.values()]
 
     return labels, data, [database_result]
 

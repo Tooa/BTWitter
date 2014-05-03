@@ -16,6 +16,22 @@ from math import log
 from collections import OrderedDict
 
 
+def maximum(iterable, default):
+    """Like max(), but returns a default value if xs is empty."""
+    try:
+        return max(iterable)
+    except ValueError:
+        return default
+
+
+def minimum(iterable, default):
+    """Like max(), but returns a default value if xs is empty."""
+    try:
+        return max(iterable)
+    except ValueError:
+        return default
+
+
 def remove_overlap_excess(overlap, limit):
     tmp = OrderedDict()
     for i, t in enumerate(overlap.items()):
