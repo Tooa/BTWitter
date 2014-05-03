@@ -27,6 +27,7 @@ import operator
 import re
 import html.parser as HTMLParser
 
+
 def regex_or(*items):
     return '(?:' + '|'.join(items) + ')'
 

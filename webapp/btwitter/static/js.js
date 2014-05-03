@@ -122,19 +122,21 @@ function renderContext(cooccurrence, keyword) {
         traditional: true
     }).done(function (data) {
         var tweets = data.tweets;
-        var index = 0
+        var index = 1
 
        $('#context_modal_header').html('Relation( { ' + keyword + ' } , ' + cooccurrence + ' )');
 
        function set_content(pos) {
-           $('#panel_title_context').html('Context <span class="label label-warning pull-right"> Anzahl: ' + (pos + 1) + ' / ' + tweets.length + '</span>');
-           $('#panel_body_context').html('<blockquote><p>' + tweets[pos] + '</p></blockquote>');
+           $('#panel_title_context').html('Context <span class="label label-warning pull-right"> Anzahl: ' + pos + ' / ' + tweets.length + '</span>');
+           $('#panel_body_context').html('<blockquote><p>' + tweets[pos-1] + '</p></blockquote>');
        }
 
        set_content(index)
 
        $('#next_tweet_button').click(function() {
-           if(index >= tweets.length - 1) return;
+           console.log(index)
+           console.log(tweets.length)
+           if(index >= tweets.length) return;
            index += 1;
            set_content(index)
        });
