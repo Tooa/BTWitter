@@ -50,14 +50,3 @@ def multiple_replace(text, dic):
 def clean_keyword(keyword):
     return multiple_replace(keyword.lower(), vowel_dic).lstrip()
 
-
-def input_is_valid(request_values):
-    def first_keyword_is_not_empty():
-        return request_values['keywords'] and request_values['keywords'][0] != ''
-
-    def any_word_class_selected():
-        return any(request_values['pos'].values())
-
-    return first_keyword_is_not_empty() and request_values['limit'] > 0 and any_word_class_selected()
-
-

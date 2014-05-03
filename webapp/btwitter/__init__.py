@@ -21,7 +21,7 @@ from py2neo import neo4j
 import psycopg2
 
 from databaseImport import do_import
-from requestHelper import clean_keyword, RequestValues, input_is_valid
+from requestHelper import clean_keyword, RequestValues
 from analysisHelper import maximum, minimum
 
 from analysis import create_contrastive_analysis, create_single_analysis
@@ -98,9 +98,8 @@ def create_app():
         y_axis['min'] = minimum(mesaure)
         y_axis['max'] = maximum(mesaure)
 
-
         #Maybe input valid is not nec anymore
-        if all(not d for d in database_result) or not input_is_valid(input_values):
+        if all(not d for d in database_result):
             return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
                            info={}, exclude=[])
 
