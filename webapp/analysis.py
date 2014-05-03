@@ -16,7 +16,7 @@ from itertools import chain
 
 from analysisQuery import create_single_query, create_overlap_query, execute_single_analysis_query, \
     execute_contrastive_analysis_query
-from analysisHelper import transform_to_logistic_curve, rescale, remove_overlap_excess, append_overlap
+from analysisHelper import transform_to_logistic_curve, rescale, remove_overlap_excess, append_overlap, maximum, minimum
 from requestHelper import clean_keyword
 
 
@@ -27,9 +27,9 @@ def create_single_analysis(input_values, config):
     database_result = execute_single_analysis_query(query, config, input_values['measure'])
 
     labels = list(database_result.keys())
-    data = [value[1]['measure'] for value in database_result.values()]
+    data = [{'y': value[1]['measure'], 'org_y': value[1]['measure']} for value in database_result.values()]
 
-    return labels, data, [database_result]
+    return labels, [data], [database_result]
 
 
 def create_contrastive_analysis(input_values, config):
@@ -54,13 +54,15 @@ def create_contrastive_analysis(input_values, config):
 
     results = append_overlap(results, overlap)
 
-    max_value = max(chain(results[0].values(), results[1].values()), key=lambda k: k[1]['measure'])[1]['measure']
-    min_value = min(chain(results[0].values(), results[1].values()), key=lambda k: k[1]['measure'])[1]['measure']
+    measure = list(map(lambda k: k[1]['measure'], chain(results[0].values(), results[1].values())))
+    max_value = maximum(measure)
+    min_value = minimum(measure)
 
     data = transform_to_logistic_curve(results, labels, min_value, max_value)
 
-    max_value_new = max(chain(data[0], data[1]), key=lambda k: k['y'])['y']
-    min_value_new = min(chain(data[0], data[1]), key=lambda k: k['y'])['y']
+    measure = list(map(lambda k: k['y'], chain(data[0], data[1])))
+    max_value_new = maximum(measure)
+    min_value_new = minimum(measure)
 
     offset = int((max_value - abs(min_value)) * 0.03)
     data = rescale(data, min_value, max_value, min_value_new, max_value_new, offset)

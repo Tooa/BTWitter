@@ -77,26 +77,27 @@ def create_app():
     def generate_chart():
         input_values = RequestValues(request.values, app.config)
 
-        #Single Analysis
+        title = {"text": 'Kontrastive Analyse für:  ' + str(input_values['keywords'])}
+        y_axis = {}
+        series = []
+
         if len(input_values['keywords']) == 1:
             labels, data, database_result = create_single_analysis(input_values, app.config)
-
-            series = [{"name": input_values['keywords'][0], "data": [{'y': t, 'org_y': t} for t in data]}]
-            y_axis = {"min": minimum(data, -1), "max": maximum(data, -1), "type": 'logarithmic'}
-
-        # Constrastive Analysis
+            y_axis['type'] = "logarithmic"
         elif len(input_values['keywords']) == 2:
             labels, data, database_result = create_contrastive_analysis(input_values, app.config)
-
-            series = [{"name": input_values['keywords'][0], "data": data[0]},
-                      {"name": input_values['keywords'][1], "data": data[1]}]
-            y_axis = {"min": minimum(chain(data[0], data[1]), key=lambda k: k['y'])['y'],
-                      "max": maximum(chain(data[0], data[1]), key=lambda k: k['y'])['y']}
-
         else:
             print('error unknown len of keywords')
 
-        title = {"text": 'Kontrastive Analyse für:  ' + str(input_values['keywords'])}
+
+        for keyword, d in zip(input_values['keywords'], data):
+            series.append({"name": keyword, "data": d})
+
+        mesaure = list(map(lambda k: k['y'], chain(*data)))
+
+        y_axis['min'] = minimum(mesaure)
+        y_axis['max'] = maximum(mesaure)
+
 
         #Maybe input valid is not nec anymore
         if all(not d for d in database_result) or not input_is_valid(input_values):

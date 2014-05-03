@@ -16,7 +16,7 @@ from math import log
 from collections import OrderedDict
 
 
-def maximum(iterable, default):
+def maximum(iterable, default=1):
     """Like max(), but returns a default value if xs is empty."""
     try:
         return max(iterable)
@@ -24,7 +24,7 @@ def maximum(iterable, default):
         return default
 
 
-def minimum(iterable, default):
+def minimum(iterable, default=1):
     """Like max(), but returns a default value if xs is empty."""
     try:
         return min(iterable)
