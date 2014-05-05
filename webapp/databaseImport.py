@@ -75,7 +75,8 @@ def convert_relation(relation, relation_name, relation_file_name, id_to_word):
 
 
 def do_import(request, upload_folder):
-    files_to_store = ['before_words', 'before_rel', 'after_words', 'after_rel', 'postags', 'multiwordlist.ner']
+    files_to_store = ['before_words', 'before_rel', 'after_words', 'after_rel', 'postags', 'multiwordlist.ner',
+                      'sentences', 'index_word_sentence']
 
     for i, file in zip(range(1, 7), files_to_store):
         save_file(request.files['file' + i], join(upload_folder, file))

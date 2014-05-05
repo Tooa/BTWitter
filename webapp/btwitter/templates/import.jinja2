@@ -1,13 +1,40 @@
 <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file1>
-          <input type=file name=file2>
-          <input type=file name=file3>
-          <input type=file name=file4>
-          <input type=file name=file5>
-          <input type=file name=file6>
+    <link rel="stylesheet" href="{{ url_for('static', filename='components/bootstrap/css/bootstrap.css') }}" type="text/css" />
 
-         <input type=submit value=Upload>
-    </form>
+    <title>Import Mode</title>
+    <h1>Import Mode - Upload new files</h1>
+    <ol>
+        <form action="" method=post enctype=multipart/form-data>
+              <li> Words before
+                  <input type=file name=file1>
+              </li>
+
+              <li> Co-occurrence before
+                  <input type=file name=file2>
+              </li>
+              <li> Words after
+                  <input type=file name=file3>
+              </li>
+
+              <li> Co-occurrence after
+                  <input type=file name=file4>
+              </li>
+              <li> Postags
+                  <input type=file name=file5>
+              </li>
+
+              <li> Multiword list
+                  <input type=file name=file6>
+              </li>
+
+              <li> Sentences
+                  <input type=file name=file7>
+              </li>
+
+              <li> Index Word-Tweets
+                  <input type=file name=file8>
+              </li>
+
+        </form>
+        <input class="btn btn-primary" type=submit value=Upload style="margin-top: 10px">
+    </ol>

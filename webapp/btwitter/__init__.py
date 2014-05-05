@@ -89,16 +89,14 @@ def create_app():
         else:
             print('error unknown len of keywords')
 
-
         for keyword, d in zip(input_values['keywords'], data):
             series.append({"name": keyword, "data": d})
 
-        mesaure = list(map(lambda k: k['y'], chain(*data)))
+        measure = list(map(lambda k: k['y'], chain(*data)))
 
-        y_axis['min'] = minimum(mesaure)
-        y_axis['max'] = maximum(mesaure)
+        y_axis['min'] = minimum(measure)
+        y_axis['max'] = maximum(measure)
 
-        #Maybe input valid is not nec anymore
         if all(not d for d in database_result):
             return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
                            info={}, exclude=[])
