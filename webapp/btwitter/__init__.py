@@ -27,83 +27,85 @@ from analysisHelper import maximum, minimum
 from analysis import create_contrastive_analysis, create_single_analysis
 
 
-def create_app():
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    app.secret_key = os.urandom(24)
-    app.config.from_object('config.ProductiveConfig')
-
-    @app.before_request
-    def before_request():
-        g.neo4j_db = neo4j.GraphDatabaseService(app.config['GRAPH_DB_URI'])
-        g.posgre_db = psycopg2.connect(app.config['POSTGRE_SQL_URI'])
-
-    @app.route("/", methods=['GET', 'POST'])
-    @app.route('/index')
-    def index():
-        return render_template('index.jinja2', measures=app.config['SIGNIFICANCE_MEASURES'],
-                               pos_tags=app.config['POS_TAGS'].keys())
-
-    @app.route('/import', methods=['GET', 'POST'])
-    def import_data():
-        if not app.config['DEBUG']:
-            return "Access denied"
-
-        if request.method == 'POST':
-            do_import(request, app.config['UPLOAD_FOLDER'], app.config['ALLOWED_EXTENSIONS'])
-            return "Import Done"
-
-        return render_template('import.jinja2')
-
-    @app.route("/get_context", methods=('POST',))
-    def get_context():
-        keyword = clean_keyword(loads(request.values['keyword']))
-        co_occurring_word = request.values['cooccurrence']
-
-        cursor = g.posgre_db.cursor()
-        cursor.execute("""select S.sentence from sentences S where S.id in
-                        (select sentenceId from inv_w I where
-                        I.wordId in (select id from words where word IN (%s, %s))
-                        group by I.sentenceId
-                        having count(distinct I.wordId) = 2
-                        );""", (keyword, co_occurring_word))
-
-        result = cursor.fetchall()
-        cursor.close()
-        return jsonify(tweets=result)
+app.secret_key = os.urandom(24)
+app.config.from_object('config.ProductiveConfig')
 
 
-    @app.route("/generate_chart", methods=('POST',))
-    def generate_chart():
-        input_values = RequestValues(request.values, app.config)
+@app.before_request
+def before_request():
+    g.neo4j_db = neo4j.GraphDatabaseService(app.config['GRAPH_DB_URI'])
+    g.posgre_db = psycopg2.connect(app.config['POSTGRE_SQL_URI'])
 
-        title = {"text": 'Kontrastive Analyse für:  ' + str(input_values['keywords'])}
-        y_axis = {}
-        series = []
 
-        if len(input_values['keywords']) == 1:
-            labels, data, database_result = create_single_analysis(input_values, app.config)
-            y_axis['type'] = "logarithmic"
-        elif len(input_values['keywords']) == 2:
-            labels, data, database_result = create_contrastive_analysis(input_values, app.config)
-        else:
-            print('error unknown len of keywords')
+@app.route("/", methods=['GET', 'POST'])
+@app.route('/index')
+def index():
+    return render_template('index.jinja2', measures=app.config['SIGNIFICANCE_MEASURES'],
+                           pos_tags=app.config['POS_TAGS'].keys())
 
-        for keyword, d in zip(input_values['keywords'], data):
-            series.append({"name": keyword, "data": d})
 
-        measure = list(map(lambda k: k['y'], chain(*data)))
+@app.route('/import', methods=['GET', 'POST'])
+def import_data():
+    if not app.config['DEBUG']:
+        return "Access denied"
 
-        y_axis['min'] = minimum(measure)
-        y_axis['max'] = maximum(measure)
+    if request.method == 'POST':
+        do_import(request, app.config)
+        return "Import Done"
 
-        if all(not d for d in database_result):
-            return jsonify(series=[], title={"text": 'NO DATA'}, xAxis={}, yAxis={}, labels=[], context_list=[],
-                           info={}, exclude=[])
+    return render_template('import.jinja2')
 
-        return jsonify(series=series, title=title, yAxis=y_axis, labels=labels,
-                       info={key: value for (key, value) in zip(input_values['keywords'], database_result)},
-                       exclude=True if input_values['exclude_list'] else False)
 
-    return app
+@app.route("/get_context", methods=('POST',))
+def get_context():
+    keyword = clean_keyword(loads(request.values['keyword']))
+    co_occurring_word = request.values['cooccurrence']
+
+    cursor = g.posgre_db.cursor()
+    cursor.execute("""select S.sentence from sentences S where S.id in
+                    (select sentenceId from inv_w I where
+                    I.wordId in (select id from words where word IN (%s, %s))
+                    group by I.sentenceId
+                    having count(distinct I.wordId) = 2
+                    );""", (keyword, co_occurring_word))
+
+    result = cursor.fetchall()
+    cursor.close()
+    return jsonify(tweets=result)
+
+
+@app.route("/generate_chart", methods=('POST',))
+def generate_chart():
+    input_values = RequestValues(request.values, app.config)
+
+    title = {"text": 'Kollokationsanalyse für:  ' + str(input_values['keywords'])}
+    y_axis = {}
+    series = []
+
+    if len(input_values['keywords']) == 1:
+        labels, data, database_result = create_single_analysis(input_values, app.config)
+        y_axis['type'] = "logarithmic"
+    elif len(input_values['keywords']) == 2:
+        labels, data, database_result = create_contrastive_analysis(input_values, app.config)
+    else:
+        print('error unknown len of keywords')
+
+    for keyword, d in zip(input_values['keywords'], data):
+        series.append({"name": keyword, "data": d})
+
+    measure = list(map(lambda k: k['y'], chain(*data)))
+
+    y_axis['min'] = minimum(measure)
+    y_axis['max'] = maximum(measure)
+
+    if all(not d for d in database_result):
+        return jsonify(series=[], title={"text": 'Keine Daten'}, xAxis={}, yAxis={}, labels=[], context_list=[],
+                       info={}, exclude=[])
+
+    return jsonify(series=series, title=title, yAxis=y_axis, labels=labels,
+                   info={key: value for (key, value) in zip(input_values['keywords'], database_result)},
+                   exclude=True if input_values['exclude_list'] else False)
+
 
