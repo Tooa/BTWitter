@@ -113,6 +113,9 @@
     <script type="text/javascript" src="{{ url_for('static', filename='eventRegisterComponent.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='components/highcharts.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='components/exporting.js') }}"></script>
+    <script type=text/javascript>
+       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script> 
   </body>
 </html>
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Copyright 2014 Uli Fahrer
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License."""
 
-# -*- coding: utf-8 -*-
 from json import loads
 import os
 from itertools import chain
@@ -31,7 +31,7 @@ app = Flask(__name__)
 
 app.secret_key = os.urandom(24)
 app.config.from_object('config.ProductiveConfig')
-
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 @app.before_request
 def before_request():
@@ -107,5 +107,3 @@ def generate_chart():
     return jsonify(series=series, title=title, yAxis=y_axis, labels=labels,
                    info={key: value for (key, value) in zip(input_values['keywords'], database_result)},
                    exclude=True if input_values['exclude_list'] else False)
-
-

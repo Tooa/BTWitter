@@ -32,7 +32,7 @@ function resend(exclude) {
         exclude = []
 
     $.ajax({
-        url: '/generate_chart',
+        url: $SCRIPT_ROOT + '/generate_chart',
         type: 'POST',
         data: {
             keywords: JSON.stringify(keywords),
@@ -112,7 +112,7 @@ function renderContext(cooccurrence, keyword) {
     $("#context_modal").modal('show');
 
     $.ajax({
-        url:  '/get_context',
+        url:  $SCRIPT_ROOT + '/get_context',
         type: 'POST',
         data: {
             keyword:  JSON.stringify(keyword),

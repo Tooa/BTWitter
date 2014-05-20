@@ -12,10 +12,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License."""
 
-#!/usr/bin/env python3.3
+#!/usr/bin/env python3
 from btwitter import app
 
-#app = create_app()
+
+class WebFactionMiddleware(object):
+    def __init__(self, app):
+        self.app = app
+    def __call__(self, environ, start_response):
+        environ['SCRIPT_NAME'] = '/BTWitter'
+        return self.app(environ, start_response)
+
 
 if __name__ == '__main__':
-    app.run()
+    #Use this if your app isn't located at /
+    #app.wsgi_app = WebFactionMiddleware(app.wsgi_app)
+    app.run(host='0.0.0.0', port=3031)
