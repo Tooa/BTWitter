@@ -147,45 +147,70 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3 class="modal-title" >Configuration Parameter Help</h3>
+                    <h3 class="modal-title">Hilfe zu den Konfigurationsparametern</h3>
                 </div>
                 <div class="modal-body">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#normal"  data-toggle="tab">Normal Mode</a></li>
-                        <li><a href="#advanced"  data-toggle="tab">Advanced Mode</a></li>
+                        <li class="active"><a href="#normal"  data-toggle="tab">Standard Modus</a></li>
+                        <li><a href="#advanced"  data-toggle="tab">Erweiterter Modus</a></li>
                     </ul>
 
                     <div class="tab-content">
                         <div class="tab-pane active" id="normal">
                             <dl style="margin-top: 10px;">
-                                 <dt>Keywords: </dt>
+                                 <dt>Schlüsselwörter: </dt>
                                  <dd>
-                                     Die beiden Eingabefelder erwarteten jeweils einen Politiker oder eine Partei, für welche eine kontrastive Kollokationsanalyse durchgeführt werden soll.
+                                     Die beiden Eingabefelder erwarten jeweils einen Politiker oder eine Partei, für welche eine kontrastive Kollokationsanalyse durchgeführt werden soll.
                                      Mit Hilfe des Buttons, auf dem ein Minuszeichen abgebildet ist, kann ein Eingabefeld entfernt werden, um eine Analyse mit nur einer Entität durchzuführen.
-                                     Analog erzeugt der Button mit dem Pluszeichen ein neues Eingabefeld für die kontrastive Analyse.
+                                     Analog erzeugt der Button mit dem Pluszeichen ein neues Eingabefeld für die kontrastive Analyse. Das Eingabefeld ist außerdem mit einer Autovervollständigungsfunktion ausgestattet,
+                                     welche Spitzenkandidaten dieser Bundestagswahl unterstützt. Durch betätigen des Go-Buttons, wird die Anfrage an den Server übermittelt und anschließend das Ergebnis visualisiert.
                                  </dd>
-                                 <dt>Display Limit: </dt>
+                                 <dt>Anzahl der Begriffe: </dt>
                                  <dd>
-                                    Dieses Feld reguliert die Gesamtanzahl der angezeigten Wörter in der Analyse. Die Obergrenze liegt bei 200 Begriffen, da mehr Wörter nicht überschneidungsfrei
-                                    auf durchschnittlichen Monitoren dargestellt werden können.
+                                    Dieses Feld reguliert die Gesamtanzahl der angezeigten Wörter in der Analyse.
+                                    Die Obergrenze liegt bei 200 Begriffen, da mehr Wörter nicht überschneidungsfrei auf durchschnittlichen Monitoren dargestellt werden können.
                                  </dd>
-                                 <dt>Part of Speech: </dt>
+                                 <dt>Part-of-Speech: </dt>
                                  <dd>
                                      Diese Option ermöglicht es, verschiedene Wortklassen von der Analyse auszuschließen. In der Standardeinstellung werden alle Wortklassen betrachtet.
-                                     Diese Wortklassen repräsentieren neben herkömmlichen Wortarten (Verben, Nomen, Adjektive, ...) auch beispielsweise Orte, die in Zusammenhang mit
-                                     der untersuchten Entität stehen. Außerdem werden Twitter-spezifische Klassen wie Hashtags und Usernamen unterstützt.
+                                     Diese Wortklassen repräsentieren neben herkömmlichen Wortarten (z.B. Verben, Nomen und Adjektive) auch  Standorte, die in Zusammenhang mit der untersuchten Entität stehen.
+                                     Außerdem werden twitterspezifische Klassen wie Hashtags und Usernamen unterstützt.
                                  </dd>
-                                 <dt>Other Options: </dt>
+                                 <dt>Sonstige Optionen: </dt>
                                  <dd>
-                                     Zum einen können Tweets nach der Bundestagswahl am 22. September in die Auswertung der Analyse aufgenommen werden. Diese Funktion ist nützlich für
-                                     Untersuchungen, die speziell auf Auswirkungen vor und nach dem Wahlkampf fokussiert sind. Zum anderen bietet der zweite Schalter die Möglichkeit, die Analyse
-                                     auf Namensentitäten zu beschränken. Dadurch werden nur Politiker angezeigt, die dem gegebenen Politiker oder der gegebenen Partei stark assoziiert sind.
+                                     Zum einen können Tweets nach der Bundestagswahl am 22. September in die Auswertung der Analyse aufgenommen werden. Diese Funktion ist nützlich für Untersuchungen,
+                                     die speziell auf Auswirkungen vor und nach dem Wahlkampf fokussiert sind. Zum anderen bietet der zweite Schalter die Möglichkeit, die Analyse auf Namensentitäten zu beschränken.
+                                     Dadurch werden nur Politiker angezeigt, die mit dem gegebenen Politiker oder der gegebenen Partei stark assoziiert sind.
                                  </dd>
                             </dl>
                         </div>
 
                         <div class="tab-pane" id="advanced">
-
+                            <dl style="margin-top: 10px;">
+                                     <dt>Wortassoziationsmetriken: </dt>
+                                     <dd>
+                                         Hier kann das Wortassoziationsmaß variiert werden. Dieses Maß bestimmt, welche Wörter für die zu untersuchenden Entitäten in die Ergebnisse aufgenommen werden sollen.
+                                         Es existiert außerdem eine starke Abhängigkeit zu anderen Parametern, wie  der Wortfrequenz. Das bedeutet, das Ändern dieses Maßes kann es erforderlich machen,
+                                         andere Parameter entsprechend anzupassen.
+                                     </dd>
+                                     <dt>Kantengewicht: </dt>
+                                     <dd>
+                                        Dieser Parameter repräsentiert einen Schwellwert für das minimale Kantengewicht zwischen der gegebenen Entität und dem stark assoziierten Wort. Ein minimales Kantengewicht von drei bedeutet, dass beide Wörter mindestens dreimal als Bigramm im Korpus enthalten sein müssen.
+                                     </dd>
+                                     <dt>Wortfrequenz A und B: </dt>
+                                     <dd>
+                                         Die Wortfrequenz bestimmt, wie häufig ein Wort im Korpus enthalten sein muss, um in die Ergebnisse aufgenommen zu werden.
+                                         Dieser Parameter ist wichtig für die Verwendung mit dem \ac{PMI} Maß und kann genutzt werden, um seltene Bigramme aus dem Ergebnis zu entfernen.
+                                     </dd>
+                                     <dt>Wortfrequenz AB: </dt>
+                                     <dd>
+                                         Dieser Parameter reguliert explizit die Frequenz der Wörter im Schnitt der Analyse.
+                                     </dd>
+                                     <dt>Anteil der Begriffe im Schnitt: </dt>
+                                     <dd>
+                                         Diese Einstellung kontrolliert den Anteil der Gemeinsamkeiten zwischen den betrachteten Entitäten. Der Wert 25 bedeutet, dass mindestens 25 Prozent der Menge an Wörtern im Ergebnis Gemeinsamkeiten repräsentieren müssen.
+                                    </dd>
+                                </dl>
                         </div>
                     </div>
                 </div>
@@ -204,9 +229,11 @@
 
     <div class="jumbotron">
       <div class="container">
-        <h1>Hello, world!</h1>
-        <p>This is a template for my bachelor thesis website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a class="btn btn-primary btn-lg" role="button" id="learn_more_button">Learn more &raquo;</a></p>
+        <h1>#BTWitter - Kontrastive Kollokationsanalyse</h1>
+        <p>Diese Webseite stellt meine Bachelorarbeit zum Thema "Analyse der Bundestagswahl 2013 mit Twitter" vor. Es wird eine neuartige Methode vorgestellt, die es ermöglicht zwei Politiker oder Parteien zu vergleichen.
+            Untersucht werden Gemeinsamkeiten und Unterschiede der Parteien oder Politiker.
+            Diese kontrastive Kollokationsanalyse basiert auf den aggregierten Twitter-Nachrichten der Wahl und kann mit Hilfe dieser Webanwendung durchgeführt und visualisiert werden.   </p>
+        <p><a class="btn btn-primary btn-lg" role="button" id="learn_more_button">Erfahren Sie mehr &raquo;</a></p>
       </div>
     </div>
 
@@ -215,7 +242,7 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">
                     <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#usage_collapse">Usage</a>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#usage_collapse">Anleitung</a>
                     </h4>
                 </div>
                 <div id="usage_collapse" class="panel-collapse collapse">
@@ -233,10 +260,12 @@
                 </div>
                 <div id="author_collapse" class="panel-collapse collapse in">
                     <div class="panel-body">
-                       Uli Fahrer is a Computer Science student at the <a title="Technische Universität Darmstadt" href="http://www.tu-darmstadt.de/" target="_blank">Technische Universität Darmstadt</a>. His main interests are Web Mining, Text Mining and Natural Language Processing.
-                       He has given several <a title="Programmiervorkurs" href="http://d120.de/vorkurs/" target="_blank">lectures</a> about software programming in Java at his university for students in the first semester. Furthermore he is working as research assistant at the <a title="Software Technology Group" href="http://www.stg.tu-darmstadt.de/" target="_blank">Software Technology Group</a> focusing on code recommendation.
-                       Beside these activities he is vice chairman of the "<b>F</b>örderverein für <b>C</b>omputerspiele<b>E</b>ntwicklung e. V" (short FCE), which organizes an event called <a href="http://devmania.net/" target="_blank">Devmania</a>.
-                       If you want to know more, drop me a line: uli.fahrer[a_t]stud.tu-darmstadt.de
+                       Uli Fahrer ist ein Informatik-Student an der <a title="Technische Universität Darmstadt" href="http://www.tu-darmstadt.de/" target="_blank">Technische Universität Darmstadt</a>.
+                       Seine Interessen sind Web Mining, Software Engineering und Natural Language Processing. Er veranstaltet den  <a title="Programmiervorkurs" href="http://d120.de/vorkurs/" target="_blank">Programmiervorkurs</a> an der TU Darmstadt für Studenten im ersten Semester.
+                       Der Kurs richtet sich an alle Studenten, die bisher keine oder nur sehr begrenzte Erfahrungen mit dem Programmieren gemacht haben und diese schon vor Beginn des Studiengangs Bachelor of Science Informatik erwerben möchten.
+                       Außerdem arbeitet er als Hiwi für die <a title="Software Technology Group" href="http://www.stg.tu-darmstadt.de/" target="_blank">Software Technology Group</a> mit den Schwerpunkten auf eine intelligente Code-Completion.
+                       Zusätzlich zu diesen Aktivitäten ist er stellvertretender Vorsitzender des <b>F</b>örderverein für <b>C</b>omputerspiele<b>E</b>ntwicklung e. V (kurz FCE), welcher die <a href="http://devmania.net/" target="_blank">Devmania</a> in Mainz organisiert.
+                       Dies ist ein jährliches Zusammentreffen von Spieleentwicklern und Nachwuchstalenten.
                     </div>
                 </div>
             </div>
@@ -245,19 +274,22 @@
 
       <div class="row">
         <div class="col-md-4">
-          <h2>Thesis</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <h2>Bachelor-Thesis</h2>
+          <p>Diese Bachelor-Thesis beschreibt eine Methode, die auf Wortkollokationen basiert und zwei Schlüsselwörter anhand ihrer stark assoziierten Wörter kontrastiert.
+              Das Konzept wird verwendet, um zu untersuchen, wie Ereignisse der realen Welt in Twitter reflektiert werden. </p>
+          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/thesis_final_uf.pdf') }}" role="button">Download &raquo;</a></p>
         </div>
         <div class="col-md-4">
-          <h2>Student Talk Slides</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <h2>Poster</h2>
+          <p>Hierbei handelt es sich um das Poster zu dem auf den Informatiktagen eingereichten Beitrag mit dem Thema "Contrastive Co-occurrence Analysis on Twitter for the German Election 2013".
+          Das Poster beschreibt schematisch die Idee und Umsetzung der Analyse.</p>
+          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/Poster_Informatiktage_Fahrer_2503.pdf') }}" role="button">Download &raquo;</a></p>
        </div>
         <div class="col-md-4">
           <h2>Paper Informatiktage 2014</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <p>Die <a title="Informatiktage" href="http://informatiktage.gi.de/" target="_blank">Informatiktage</a> ist eine Veranstaltung, organisiert durch die Gesellschaft für Informatik.
+          Es gibt zahlreiche Vorträge, Diskussionsrunden, Workshops, eine Postersession und die Möglichkeit neue Kontakte zu schließen und bestehende zu vertiefen.</p>
+          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/workshop_paper.pdf') }}" role="button">Download &raquo;</a></p>
         </div>
       </div>
     </div>

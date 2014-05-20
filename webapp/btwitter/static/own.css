@@ -41,6 +41,10 @@ label {
   overflow: auto;
 }
 
+.jumbotron h1 {
+        font-size: 55px;
+ }
+
 
 /*
 Used to screen capture
