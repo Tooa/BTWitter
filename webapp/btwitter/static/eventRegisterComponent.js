@@ -54,7 +54,6 @@ function registerParameterEvents() {
     });
 
     $('#keyword_form_button').on('click',  function(){
-        $('#graph').html('<img id="load_image" src="static/images/ajax_loader_blue_256.gif">');
         resend([])
     })
 
@@ -90,9 +89,14 @@ function registerTypeaHeadWords(id) {
     // initialize the bloodhound suggestion engine
     numbers.initialize();
 
-    $('#' + id).typeahead(
-    {
+    $('#' + id).typeahead({
         items: 102,
         source:numbers.ttAdapter()
+    });
+}
+
+function registerExamplePage() {
+    $('.example').on('click', function() {
+        $('#myTab a:first').tab('show');
     });
 }

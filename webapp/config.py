@@ -12,13 +12,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License."""
 
+
 class ProductiveConfig(object):
 
     UPLOAD_FOLDER = 'btwitter/upload'
     ALLOWED_EXTENSIONS = set(['co_s', 'words', 'postags', 'ner'])
 
+    POSTGRE_USER = 'tiny'
+    POSTGRE_DB = 'corpus'
+    POSTGRE_PASS = 'tiny'
+
     GRAPH_DB_URI = 'http://localhost:7474/db/data/'
-    POSTGRE_SQL_URI = 'dbname=corpus host=localhost user=tiny password=tiny'
+    POSTGRE_SQL_URI = 'dbname=' + POSTGRE_DB + ' host=localhost user=' + POSTGRE_USER + ' password=' + POSTGRE_PASS
 
     SIGNIFICANCE_MEASURES = [('lldivlognAB', 'log-likelihood / log(nAB)'),
                              ('ll', 'log-likelihood'), ('lldivnAB', 'log-likelihood / nAB'),
@@ -26,11 +31,11 @@ class ProductiveConfig(object):
                              ('lmi', 'Lexical mutual information')]
 
     POS_TAGS = {
-        'hash': [-1],
-        'adjektiv': [2],
-        'user': [-2],
+        'hashtags': [-1],
+        'adjektive': [2],
+        'usernamen': [-2],
         'nomen': [4, 7],
-        'verb': [3, 5, 15, 22],
+        'verben': [3, 5, 15, 22],
         'standorte': [12, 8, 13],
         'sonstige': [0, 6, 9, 10, 11, 14, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30]
     }

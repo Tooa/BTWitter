@@ -17,8 +17,9 @@
     <div class="col-lg-12">
         <div class="header">
             <h3 class="text-muted">Webandwendung zur deutschen Bundestagswahl 2013 </h3>
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" id="myTab">
                 <li><a href="#main" data-toggle="tab">Analyse</a></li>
+                <li><a href="#example" data-toggle="tab">Beispiele</a></li>
                 <li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#"> Optionen <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                     <li><a href="#edit_modal" data-toggle="modal">Diagamm bearbeiten</a></li>
@@ -67,6 +68,13 @@
                 {% endblock graph %}
             </div>
 
+        </div>
+
+        <div class="tab-pane" id="example">
+            <div class="col-lg-12" style="padding: 10px">
+                {% block example %}
+                {% endblock example %}
+            </div>
         </div>
 
 

@@ -21,7 +21,7 @@ from py2neo import neo4j
 import psycopg2
 
 from databaseImport import do_import
-from requestHelper import clean_keyword, RequestValues
+from requestHelper import clean_keyword, RequestValues, examples
 from analysisHelper import maximum, minimum
 
 from analysis import create_contrastive_analysis, create_single_analysis
@@ -43,7 +43,7 @@ def before_request():
 @app.route('/index')
 def index():
     return render_template('index.jinja2', measures=app.config['SIGNIFICANCE_MEASURES'],
-                           pos_tags=app.config['POS_TAGS'].keys())
+                           pos_tags=app.config['POS_TAGS'].keys(), examples=examples)
 
 
 @app.route('/import', methods=['GET', 'POST'])
@@ -79,6 +79,7 @@ def get_context():
 @app.route("/generate_chart", methods=('POST',))
 def generate_chart():
     input_values = RequestValues(request.values, app.config)
+    print(input_values)
 
     title = {"text": 'Kollokationsanalyse für:  ' + str(input_values['keywords'])}
     y_axis = {}

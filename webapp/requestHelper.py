@@ -19,6 +19,31 @@ from itertools import chain
 
 vowel_dic = {'ä': 'ae', 'Ä': 'ae', 'ü': 'ue', 'Ü': 'ue', 'Ö': 'oe', 'ö': 'oe', 'ß': 'ss', 'ẞ': 'ss'}
 
+pos_dict = {'verben': True, 'usernamen': True, 'standorte': True, 'sonstige': True, 'nomen': True, 'adjektive': True,
+            'hashtags': True}
+
+
+merkel_steinbrueck = {'Number': '1', 'P1': 'Angela Merkel', 'P2': 'Peer Steinbrück',
+                                 'Description': 'Kontrastive Kollokationsanalyse zwischen Angela Merkel und Peer Steinbrück. Betrachtet werden 40 Begriffe.',
+                                 'K1': 'merkel', 'K2': 'steinbrück', 'overlap_limit': 25,
+                                 'pos': pos_dict,
+                                 'opts': {'include': True, 'only_names': False}}
+
+merkel_steinbrueck_adjectives = {'Number': '2', 'P1': 'Angela Merkel', 'P2': 'Peer Steinbrück',
+                                 'Description': 'Eine auf Adjektive beschränkte Analyse mit einem Schnitt von mindestens 50 Prozent',
+                                 'K1': 'merkel', 'K2': 'steinbrück', 'overlap_limit': 50,
+                                 'pos': {k: v if k == 'adjektive' else not v for (k, v) in pos_dict.items()},
+                                 'opts': {'include': True, 'only_names': False}}
+
+ramsauer_mainz = {'Number': '1', 'P1': 'Peter Ramsauer', 'P2': 'Deutsche Bahn',
+                                 'Description': 'Kontrastive Kollokationsanalyse zwischen Peter Ramsauer und der deutschen Bahn',
+                                 'K1': 'ramsauer', 'K2': 'bahn', 'overlap_limit': 50,
+                                 'pos': pos_dict,
+                                 'opts': {'include': True, 'only_names': False}}
+
+
+examples = [merkel_steinbrueck, merkel_steinbrueck_adjectives, ramsauer_mainz]
+
 
 class RequestValues(dict):
     def __init__(self, request, app_config):

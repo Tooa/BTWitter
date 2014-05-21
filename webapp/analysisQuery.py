@@ -15,6 +15,7 @@ limitations under the License."""
 from collections import OrderedDict
 from flask import g
 from py2neo import neo4j
+from neo4jrestclient import client
 
 
 class Relation(dict):

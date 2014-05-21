@@ -31,6 +31,14 @@ function resend(exclude) {
     if(typeof exclude == 'undefined')
         exclude = []
 
+    generateChart(keywords, measure, edge_weight, freq_a, freq_b, freq_ab, overlap_limit, limit, pos, opts, exclude)
+}
+
+
+function generateChart(keywords, measure, edge_weight, freq_a, freq_b, freq_ab, overlap_limit, limit, pos, opts, exclude) {
+
+    $('#graph').html('<img id="load_image" src="static/images/ajax_loader_blue_256.gif">');
+
     $.ajax({
         url: $SCRIPT_ROOT + '/generate_chart',
         type: 'POST',
@@ -157,4 +165,5 @@ $(function () {
     registerParameterEvents();
     registerGeneralButtonToggleEvents();
     registerAdvancedModeToggleButtonEvents();
+    registerExamplePage();
 });

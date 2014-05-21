@@ -112,11 +112,123 @@
             <input class="form-control" id="frequency_word_ab_form" type="number" value = "3" placeholder="3">
         </div>
     </div>
+
 {% endblock parameter_advanced %}
 
 {% block graph %}
     <div id="graph" style="text-align: center"></div>
 {% endblock graph %}
+
+
+{% block example %}
+
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>1. Entität</th>
+            <th>2. Entität</th>
+            <th>Beschreibung</th>
+            <th>Aktion</th>
+        </tr>
+
+        {% for entry in examples %}
+            <tr>
+                <td>{{ entry.Number }}</td>
+                <td>{{ entry.P1 }}</td>
+                <td>{{ entry.P2 }}</td>
+                <td>{{ entry.Description }}</td>
+
+                {% if entry.K1 %}
+                <script>
+                    function {{ "values" ~ entry.Number ~ "()" }} {
+                        var keywords = {{ [entry.K1, entry.K2] }}
+                        var pos = {{ entry.pos | tojson }}
+                        var opts = {{ entry.opts | tojson}}
+                        var overlap_limit = {{ entry.overlap_limit }}
+                        generateChart(keywords, 'lldivlognAB', 3, 3, 3, 3, overlap_limit, 40, pos, opts, [])
+                    };
+                </script>
+                {% endif %}
+                <td><a class="example" href="{{ "javascript:values" ~ entry.Number ~ "()" }}" id="{{ "show_example_" ~  entry.Number }}" >Auswählen</a></td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+{% endblock example %}
+
+
+{% block about %}
+
+    <div class="jumbotron">
+      <div class="container">
+        <h1>#BTWitter - Kontrastive Kollokationsanalyse</h1>
+        <p>Diese Webseite stellt meine Bachelorarbeit zum Thema "Analyse der Bundestagswahl 2013 mit Twitter" vor. Es wird eine neuartige Methode vorgestellt, die es ermöglicht zwei Politiker oder Parteien zu vergleichen.
+            Untersucht werden Gemeinsamkeiten und Unterschiede der Parteien oder Politiker.
+            Diese kontrastive Kollokationsanalyse basiert auf den aggregierten Twitter-Nachrichten der Wahl und kann mit Hilfe dieser Webanwendung durchgeführt und visualisiert werden.   </p>
+        <p><a class="btn btn-primary btn-lg" role="button" id="learn_more_button">Erfahren Sie mehr &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#usage_collapse">Anleitung</a>
+                    </h4>
+                </div>
+                <div id="usage_collapse" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#author_collapse">Autor</a>
+                    </h4>
+                </div>
+                <div id="author_collapse" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                       Uli Fahrer ist ein Informatik-Student an der <a title="Technische Universität Darmstadt" href="http://www.tu-darmstadt.de/" target="_blank">Technische Universität Darmstadt</a>.
+                       Seine Interessen sind Web Mining, Software Engineering und Natural Language Processing. Er veranstaltet den  <a title="Programmiervorkurs" href="http://d120.de/vorkurs/" target="_blank">Programmiervorkurs</a> an der TU Darmstadt für Studenten im ersten Semester.
+                       Der Kurs richtet sich an alle Studenten, die bisher keine oder nur sehr begrenzte Erfahrungen mit dem Programmieren gemacht haben und diese schon vor Beginn des Studiengangs Bachelor of Science Informatik erwerben möchten.
+                       Außerdem arbeitet er als Hiwi für die <a title="Software Technology Group" href="http://www.stg.tu-darmstadt.de/" target="_blank">Software Technology Group</a> mit den Schwerpunkten auf eine intelligente Code-Completion.
+                       Zusätzlich zu diesen Aktivitäten ist er stellvertretender Vorsitzender des <b>F</b>örderverein für <b>C</b>omputerspiele<b>E</b>ntwicklung e. V (kurz FCE), welcher die <a href="http://devmania.net/" target="_blank">Devmania</a> in Mainz organisiert.
+                       Dies ist ein jährliches Zusammentreffen von Spieleentwicklern und Nachwuchstalenten.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Bachelor-Thesis</h2>
+          <p>Diese Bachelor-Thesis beschreibt eine Methode, die auf Wortkollokationen basiert und zwei Schlüsselwörter anhand ihrer stark assoziierten Wörter kontrastiert.
+              Das Konzept wird verwendet, um zu untersuchen, wie Ereignisse der realen Welt in Twitter reflektiert werden. </p>
+          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/thesis_final_uf.pdf') }}" role="button">Download &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Poster</h2>
+          <p>Hierbei handelt es sich um das Poster zu dem auf den Informatiktagen eingereichten Beitrag mit dem Thema "Contrastive Co-occurrence Analysis on Twitter for the German Election 2013".
+          Das Poster beschreibt schematisch die Idee und Umsetzung der Analyse.</p>
+          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/Poster_Informatiktage_Fahrer_2503.pdf') }}" role="button">Download &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Paper Informatiktage 2014</h2>
+          <p>Die <a title="Informatiktage" href="http://informatiktage.gi.de/" target="_blank">Informatiktage</a> ist eine Veranstaltung, organisiert durch die Gesellschaft für Informatik.
+          Es gibt zahlreiche Vorträge, Diskussionsrunden, Workshops, eine Postersession und die Möglichkeit neue Kontakte zu schließen und bestehende zu vertiefen.</p>
+          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/workshop_paper.pdf') }}" role="button">Download &raquo;</a></p>
+        </div>
+      </div>
+    </div>
+
+{% endblock about %}
+
 
 {% block modals %}
     <div id="edit_modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edit_modal_header" aria-hidden="true">
@@ -221,78 +333,6 @@
         </div>
     </div>
 
-
 {% endblock modals %}
 
-
-{% block about %}
-
-    <div class="jumbotron">
-      <div class="container">
-        <h1>#BTWitter - Kontrastive Kollokationsanalyse</h1>
-        <p>Diese Webseite stellt meine Bachelorarbeit zum Thema "Analyse der Bundestagswahl 2013 mit Twitter" vor. Es wird eine neuartige Methode vorgestellt, die es ermöglicht zwei Politiker oder Parteien zu vergleichen.
-            Untersucht werden Gemeinsamkeiten und Unterschiede der Parteien oder Politiker.
-            Diese kontrastive Kollokationsanalyse basiert auf den aggregierten Twitter-Nachrichten der Wahl und kann mit Hilfe dieser Webanwendung durchgeführt und visualisiert werden.   </p>
-        <p><a class="btn btn-primary btn-lg" role="button" id="learn_more_button">Erfahren Sie mehr &raquo;</a></p>
-      </div>
-    </div>
-
-    <div class="container">
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#usage_collapse">Anleitung</a>
-                    </h4>
-                </div>
-                <div id="usage_collapse" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#author_collapse">Author</a>
-                    </h4>
-                </div>
-                <div id="author_collapse" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                       Uli Fahrer ist ein Informatik-Student an der <a title="Technische Universität Darmstadt" href="http://www.tu-darmstadt.de/" target="_blank">Technische Universität Darmstadt</a>.
-                       Seine Interessen sind Web Mining, Software Engineering und Natural Language Processing. Er veranstaltet den  <a title="Programmiervorkurs" href="http://d120.de/vorkurs/" target="_blank">Programmiervorkurs</a> an der TU Darmstadt für Studenten im ersten Semester.
-                       Der Kurs richtet sich an alle Studenten, die bisher keine oder nur sehr begrenzte Erfahrungen mit dem Programmieren gemacht haben und diese schon vor Beginn des Studiengangs Bachelor of Science Informatik erwerben möchten.
-                       Außerdem arbeitet er als Hiwi für die <a title="Software Technology Group" href="http://www.stg.tu-darmstadt.de/" target="_blank">Software Technology Group</a> mit den Schwerpunkten auf eine intelligente Code-Completion.
-                       Zusätzlich zu diesen Aktivitäten ist er stellvertretender Vorsitzender des <b>F</b>örderverein für <b>C</b>omputerspiele<b>E</b>ntwicklung e. V (kurz FCE), welcher die <a href="http://devmania.net/" target="_blank">Devmania</a> in Mainz organisiert.
-                       Dies ist ein jährliches Zusammentreffen von Spieleentwicklern und Nachwuchstalenten.
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Bachelor-Thesis</h2>
-          <p>Diese Bachelor-Thesis beschreibt eine Methode, die auf Wortkollokationen basiert und zwei Schlüsselwörter anhand ihrer stark assoziierten Wörter kontrastiert.
-              Das Konzept wird verwendet, um zu untersuchen, wie Ereignisse der realen Welt in Twitter reflektiert werden. </p>
-          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/thesis_final_uf.pdf') }}" role="button">Download &raquo;</a></p>
-        </div>
-        <div class="col-md-4">
-          <h2>Poster</h2>
-          <p>Hierbei handelt es sich um das Poster zu dem auf den Informatiktagen eingereichten Beitrag mit dem Thema "Contrastive Co-occurrence Analysis on Twitter for the German Election 2013".
-          Das Poster beschreibt schematisch die Idee und Umsetzung der Analyse.</p>
-          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/Poster_Informatiktage_Fahrer_2503.pdf') }}" role="button">Download &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Paper Informatiktage 2014</h2>
-          <p>Die <a title="Informatiktage" href="http://informatiktage.gi.de/" target="_blank">Informatiktage</a> ist eine Veranstaltung, organisiert durch die Gesellschaft für Informatik.
-          Es gibt zahlreiche Vorträge, Diskussionsrunden, Workshops, eine Postersession und die Möglichkeit neue Kontakte zu schließen und bestehende zu vertiefen.</p>
-          <p><a class="btn btn-default" href="{{ url_for('static', filename='files/workshop_paper.pdf') }}" role="button">Download &raquo;</a></p>
-        </div>
-      </div>
-    </div>
-
-{% endblock about %}
 
